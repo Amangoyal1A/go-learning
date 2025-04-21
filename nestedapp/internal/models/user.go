@@ -1,0 +1,8 @@
+package models
+
+type User struct {
+	ID       uint     `gorm:"primaryKey"`
+	Name     string   `json:"name"`
+	Email    string   `json:"email"`
+	Posts    []Post   `gorm:"constraint:OnDelete:CASCADE"`
+}
