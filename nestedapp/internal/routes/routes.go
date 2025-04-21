@@ -14,7 +14,6 @@ func SetupRoutes(r *gin.Engine) {
 	commentRepo := repositories.NewCommentRepo()
 
 	userService := services.NewUserService(userRepo)
-
 	postService := services.NewPostService(postRepo)
 	commentService := services.NewCommentService(commentRepo)
 
@@ -26,6 +25,7 @@ func SetupRoutes(r *gin.Engine) {
 	r.GET("/users/:id", hUser.GetUser)
 	r.DELETE("/users/:id", hUser.DeleteUser)
 
-	r.POST("/posts", hPost.Create)
+	r.POST("/posts", hPost.CreatePost)
+
 	r.POST("/comments", hComment.Create)
 }

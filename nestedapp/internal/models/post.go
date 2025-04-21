@@ -1,9 +1,9 @@
 package models
 
 type Post struct {
-	ID     uint     `gorm:"primaryKey"`
-	Title  string   `json:"title"`
-	Body   string   `json:"body"`
-	UserID uint
-	Comments []Comment `gorm:"constraint:OnDelete:CASCADE"`
+	ID       uint      `gorm:"primaryKey" json:"id"`
+	Title    string    `json:"title" binding:"required"`
+	UserID   uint      `json:"user_id" binding:"required"`
+	User     *User      `gorm:"constraint:OnDelete:CASCADE" json:"-"`
+	Comments []Comment `gorm:"constraint:OnDelete:CASCADE" json:"comments"`
 }

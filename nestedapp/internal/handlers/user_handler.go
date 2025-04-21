@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"nested-app/internal/models"
-	"nested-app/internal/repositories"
 	"nested-app/internal/services"
 	"net/http"
 	"strconv"
@@ -14,7 +13,7 @@ type UserHandler struct {
 	repo services.UserService
 }
 
-func NewUserHandler(repo repositories.UserRepository) *UserHandler {
+func NewUserHandler(repo services.UserService) *UserHandler {
 	return &UserHandler{repo}
 }
 
