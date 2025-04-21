@@ -2,21 +2,21 @@ package handlers
 
 import (
 	"net/http"
-	"nested-app/internal/model"
-	"nested-app/internal/service"
+	"nested-app/internal/models"
+	"nested-app/internal/services"
 	"github.com/gin-gonic/gin"
 )
 
 type PostHandler struct {
-	service service.PostService
+	service services.PostService
 }
 
-func NewPostHandler(service service.PostService) *PostHandler {
+func NewPostHandler(service services.PostService) *PostHandler {
 	return &PostHandler{service}
 }
 
 func (h *PostHandler) Create(c *gin.Context) {
-	var post model.Post
+	var post models.Post
 	if err := c.ShouldBindJSON(&post); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

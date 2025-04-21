@@ -1,22 +1,22 @@
 package services
 
 import (
-	"nested-app/internal/model"
-	"nested-app/internal/repository"
+	"nested-app/internal/models"
+	"nested-app/internal/repositories"
 )
 
 type CommentService interface {
-	Create(comment *model.Comment) error
+	Create(comment *models.Comment) error
 }
 
 type commentService struct {
-	repo repository.CommentRepository
+	repo repositories.CommentRepository
 }
 
-func NewCommentService(repo repository.CommentRepository) CommentService {
+func NewCommentService(repo repositories.CommentRepository) CommentService {
 	return &commentService{repo}
 }
 
-func (s *commentService) Create(comment *model.Comment) error {
+func (s *commentService) Create(comment *models.Comment) error {
 	return s.repo.Create(comment)
 }

@@ -1,28 +1,32 @@
 package repositories
 
 import (
-	"gorm.io/gorm"
-	"myapp/models"
+	"nested-app/config"
+	"nested-app/internal/models"
 )
 
-type userRepo struct {
-	db *gorm.DB
+type UserRepository interface {
+	Create(user *models.User) error
+	GetByID(id uint) (*models.User, error)
+	Delete(id uint) error
 }
 
-func NewUserRepo(db *gorm.DB) UserRepository {
-	return &userRepo{db}
+type userRepo struct{}
+
+func NewUserRepo() UserRepository {
+	return &userRepo{}
 }
 
-func (r *userRepo) CreateUser(user *models.User) error {
-	return r.db.Create(user).Error
+func (r *userRepo) Create(user *models.User) error {
+	return config.DB.Create(user).Error
 }
 
-func (r *userRepo) GetUser(id uint) (*models.User, error) {
+func (r *userRepo) GetByID(id uint) (*models.User, error) {
 	var user models.User
-	err := r.db.Preload("Posts.Comments").First(&user, id).Error
+	err := config.DB.Preload("Posts.Comments").First(&user, id).Error
 	return &user, err
 }
 
-func (r *userRepo) DeleteUser(id uint) error {
-	return r.db.Delete(&models.User{}, id).Error
+func (r *userRepo) Delete(id uint) error {
+	return config.DB.Delete(&models.User{}, id).Error
 }

@@ -1,29 +1,29 @@
 package services
 
 import (
-	"nested-app/internal/model"
-	"nested-app/internal/repository"
+	"nested-app/internal/models"
+	"nested-app/internal/repositories"
 )
 
 type UserService interface {
-	Create(user *model.User) error
-	GetByID(id uint) (*model.User, error)
+	Create(user *models.User) error
+	GetByID(id uint) (*models.User, error)
 	Delete(id uint) error
 }
 
 type userService struct {
-	repo repository.UserRepository
+	repo repositories.UserRepository
 }
 
-func NewUserService(repo repository.UserRepository) UserService {
+func NewUserService(repo repositories.UserRepository) UserService {
 	return &userService{repo}
 }
 
-func (s *userService) Create(user *model.User) error {
+func (s *userService) Create(user *models.User) error {
 	return s.repo.Create(user)
 }
 
-func (s *userService) GetByID(id uint) (*model.User, error) {
+func (s *userService) GetByID(id uint) (*models.User, error) {
 	return s.repo.GetByID(id)
 }
 

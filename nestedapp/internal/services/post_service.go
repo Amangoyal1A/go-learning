@@ -1,22 +1,22 @@
 package services
 
 import (
-	"nested-app/internal/model"
-	"nested-app/internal/repository"
+	"nested-app/internal/models"
+	"nested-app/internal/repositories"
 )
 
 type PostService interface {
-	Create(post *model.Post) error
+	Create(post *models.Post) error
 }
 
 type postService struct {
-	repo repository.PostRepository
+	repo repositories.PostRepository
 }
 
-func NewPostService(repo repository.PostRepository) PostService {
+func NewPostService(repo repositories.PostRepository) PostService {
 	return &postService{repo}
 }
 
-func (s *postService) Create(post *model.Post) error {
+func (s *postService) Create(post *models.Post) error {
 	return s.repo.Create(post)
 }

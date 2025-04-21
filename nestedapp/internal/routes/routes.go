@@ -1,28 +1,30 @@
 package routes
 
 import (
-	"nested-app/internal/handler"
-	"nested-app/internal/repository"
-	"nested-app/internal/service"
+	"nested-app/internal/handlers"
+	"nested-app/internal/repositories"
+	"nested-app/internal/services"
+
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes(r *gin.Engine) {
-	userRepo := repository.NewUserRepo()
-	postRepo := repository.NewPostRepo()
-	commentRepo := repository.NewCommentRepo()
+	userRepo := repositories.NewUserRepo()
+	postRepo := repositories.NewPostRepo()
+	commentRepo := repositories.NewCommentRepo()
 
-	userService := service.NewUserService(userRepo)
-	postService := service.NewPostService(postRepo)
-	commentService := service.NewCommentService(commentRepo)
+	userService := services.NewUserService(userRepo)
 
-	hUser := handler.NewUserHandler(userService)
-	hPost := handler.NewPostHandler(postService)
-	hComment := handler.NewCommentHandler(commentService)
+	postService := services.NewPostService(postRepo)
+	commentService := services.NewCommentService(commentRepo)
 
-	r.POST("/users", hUser.Create)
-	r.GET("/users/:id", hUser.Get)
-	r.DELETE("/users/:id", hUser.Delete)
+	hUser := handlers.NewUserHandler(userService)
+	hPost := handlers.NewPostHandler(postService)
+	hComment := handlers.NewCommentHandler(commentService)
+
+	r.POST("/users", hUser.CreateUser)
+	r.GET("/users/:id", hUser.GetUser)
+	r.DELETE("/users/:id", hUser.DeleteUser)
 
 	r.POST("/posts", hPost.Create)
 	r.POST("/comments", hComment.Create)
