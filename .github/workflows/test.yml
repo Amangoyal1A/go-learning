@@ -1,0 +1,27 @@
+name: Code Review
+
+on:
+  pull_request:
+    branches: ["main", "dev"]
+
+jobs:
+  golangci-lint:
+    name: Golang Lint with Reviewdog
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.23"
+
+      - name: Run golangci-lint with ReviewDog
+        uses: reviewdog/action-golangci-lint@v2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: github-pr-review
+          golangci_lint_flags: "--timeout 5m"
+        continue-on-error: true  # Don’t fail build on lint errors

@@ -1,0 +1,85 @@
+git:
+- ".github/**/*"
+- ".github/*"
+- ".gitignore"
+
+test case:
+- "**/*_test.go"
+
+middleware:
+- any: ["app/middleware/*", "!app/middleware/*_test.go"]
+
+routes:
+- "app/routes.go"
+
+config:
+- any: ["config/*", "!config/*_test.go"]
+
+constants:
+- "constants/*"
+
+controller:
+- any: ["controllers/v1/**/controller*", "controllers/v1/**/handler.go", "!controllers/v1/**/*_test.go"]
+
+validator:
+- any: ["controllers/v1/**/validator*", "!controllers/v1/**/*_test.go"]
+
+transformer:
+- any: ["controllers/v1/**/transformer*", "!controllers/v1/**/*_test.go"]
+
+database:
+- "database/commands/*"
+- "database/connection.go"
+
+tables:
+- "database/tables/*"
+
+seeds:
+- "database/seeds/*"
+- "database/seeder.go"
+
+migrations:
+- "dbapp/*"
+- "database/migrator.go"
+
+gorm:
+- any: ["dbops/gorm/**/*", "dbops/**/*", "dbops/*", "!dbops/**/*_test.go", "!dbops/gorm/**/*_test.go"]
+
+documentation:
+- any: ["docs/**/*", "docs/*", "**/*.md", "README.md", "!.github/*"]
+
+merrors:
+- "merrors/*"
+
+models:
+- "models/*"
+
+providers:
+- any: ["providers/**/*", "!providers/**/*_test.go"]
+
+redis:
+- any: ["redis/*", "!redis/*_test.go"]
+
+services:
+- any: ["services/**/*", "!services/**/*_test.go"]
+
+utils:
+- any: ["utils/*", "!utils/*_test.go"]
+
+crons:
+- any: ["crons/*", "!crons/*_test.go"]
+
+
+dependencies:
+- "go.mod"
+- "go.sum"
+
+environment:
+- "*.env"
+
+scripts:
+- "**/*.sh"
+- "*.sh"
+
+main:
+- "main.go"
