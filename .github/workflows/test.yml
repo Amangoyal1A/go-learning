@@ -1,27 +1,59 @@
-name: Code Review
+name: Go Code Review
 
 on:
+  push:
+    branches: [ main, dev ]
   pull_request:
-    branches: ["main", "dev"]
+    branches: [ main, dev ]
 
 jobs:
-  golangci-lint:
-    name: Golang Lint with Reviewdog
+  code-review:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: "1.23"
+          go-version: '1.21'
 
-      - name: Run golangci-lint with ReviewDog
-        uses: reviewdog/action-golangci-lint@v2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review
-          golangci_lint_flags: "--timeout 5m"
-        continue-on-error: true  # Don’t fail build on lint errors
+      - name: Install Go Tools
+        run: |
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+          go install github.com/kisielk/errcheck@latest
+          go install golang.org/x/tools/cmd/goimports@latest
+          go install github.com/dominikh/go-tools/cmd/staticcheck@latest
+          go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+
+      - name: Run golangci-lint (Static Analysis + Linting)
+        run: |
+          ${HOME}/go/bin/golangci-lint run --out-format=colored-line-number ./...
+
+      - name: Run errcheck (Unhandled Errors)
+        run: |
+          ${HOME}/go/bin/errcheck ./...
+
+      - name: Run staticcheck (Advanced Static Analysis)
+        run: |
+          ${HOME}/go/bin/staticcheck ./...
+
+      - name: Run gocyclo (Cyclomatic Complexity)
+        run: |
+          ${HOME}/go/bin/gocyclo -over 10 .
+
+      - name: Run goimports (Formatting Check)
+        run: |
+          if [[ $(goimports -l .) ]]; then
+            echo "Improper formatting, run 'goimports -w .'"
+            exit 1
+          fi
+
+      - name: Summarize Findings
+        run: |
+          echo "Code Review Complete! Check logs for:"
+          echo "- Linting (golangci-lint)"
+          echo "- Unhandled errors (errcheck)"
+          echo "- Static analysis (staticcheck)"
+          echo "- Complexity (gocyclo)"
+          echo "- Formatting (goimports)"
