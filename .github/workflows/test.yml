@@ -1,45 +1,33 @@
-name: AI Code Review with Google Suggestions
+name: AI Code Review
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+  pull_request:            # or pull_request_target
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read           # minimal read access
+  pull-requests: write     # needed for review comments
 
 jobs:
   ai_review:
     runs-on: ubuntu-latest
-    steps:
 
-      - name: Checkout code
-        uses: actions/checkout@v3
+    steps:
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
       - name: AI Code Review
         uses: AleksandrFurmenkovOfficial/ai-code-review@v0.8
         with:
-          token:                ${{ secrets.GITHUB_TOKEN }}
-          owner:                ${{ github.repository_owner }}
-          repo:                 ${{ github.event.repository.name }}
-          pr_number:            ${{ github.event.number }}
-
-          ai_provider:          'google'
-          google_api_key:       ${{ secrets.GOOGLE_API_KEY }}
-          google_model:         'gemini-2.0-flash'
-
-          # —— Add this section to get real suggestion blocks: —— :contentReference[oaicite:4]{index=4}
-          custom_prompt: |
-            You are a meticulous code reviewer.  When you suggest a fix,
-            please format it using GitHub's suggestion syntax.  For example:
-
-            ```suggestion
-            // new code here
-            ```
-
-            Review the diff in this PR and, for each issue (naming, bug, optimization),
-            emit exactly one suggestion block containing the corrected code snippet.
-
-          # —— Scope control (optional but recommended) —— :contentReference[oaicite:5]{index=5}
-          include_extensions:   '.go,.tmpl'
-          exclude_paths:        'docs/,test/'
-          fail_action_if_review_failed: 'false'
-          mode:                 patch
+          token:            ${{ secrets.GITHUB_TOKEN }}
+          owner:            ${{ github.repository_owner }}
+          repo:             ${{ github.event.repository.name }}
+          pr_number:        ${{ github.event.number }}
+          ai_provider:      'google'
+          google_api_key:   ${{ secrets.GOOGLE_API_KEY }}
+          google_model:     'gemini-2.0-flash'
+          mode:             patch
+          language:         go
+          custom_prompt:   |
+            …your suggestion‐block prompt…
