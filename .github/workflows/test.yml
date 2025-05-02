@@ -29,7 +29,7 @@ jobs:
       - name: Run GPT PR Review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python .github/scripts/gpt_pr_review.py
+        run: python gpt_pr_review.py
 
       - name: Comment on PR (Optional)
         if: success()
