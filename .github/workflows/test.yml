@@ -17,4 +17,3 @@ jobs:
           openai_temperature: 0.2
           openai_max_tokens: 2048
           mode: patch
-          language: go  # not 'en'
