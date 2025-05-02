@@ -1,59 +1,56 @@
-name: Go Code Review
+name: PR AI Code Review
 
 on:
-  push:
-    branches: [ main, dev ]
   pull_request:
-    branches: [ main, dev ]
+    types: [opened, synchronize, edited, reopened]
 
 jobs:
-  code-review:
+  static-analysis:
+    name: Static Code Review
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22'  # Updated to avoid tool conflicts
+          go-version: '1.21'
 
-      - name: Install Go Tools
+      - name: Install golangci-lint
         run: |
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-          go install github.com/kisielk/errcheck@latest
-          go install golang.org/x/tools/cmd/goimports@latest
-          go install honnef.co/go/tools/cmd/staticcheck@latest
-          go install github.com/fzipp/gocyclo/cmd/gocyclo@latest
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2
 
-      - name: Run golangci-lint
-        run: |
-          ${HOME}/go/bin/golangci-lint run --out-format=colored-line-number ./...
+      - name: Run Linter
+        run: golangci-lint run --timeout=5m
 
-      - name: Run errcheck
-        run: |
-          ${HOME}/go/bin/errcheck ./...
+      - name: Run GoVet
+        run: go vet ./...
 
-      - name: Run staticcheck
-        run: |
-          ${HOME}/go/bin/staticcheck ./...
+      - name: Run Tests (Optional)
+        run: go test ./...
 
-      - name: Run gocyclo
-        run: |
-          ${HOME}/go/bin/gocyclo -over 10 .
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-      - name: Run goimports check
-        run: |
-          if [[ $(goimports -l .) ]]; then
-            echo "Improper formatting, run 'goimports -w .'"
-            exit 1
-          fi
+      - name: Install GPT Dependencies
+        run: pip install openai
 
-      - name: Summarize Findings
-        run: |
-          echo "Code Review Complete! Check logs for:"
-          echo "- Linting (golangci-lint)"
-          echo "- Unhandled errors (errcheck)"
-          echo "- Static analysis (staticcheck)"
-          echo "- Complexity (gocyclo)"
-          echo "- Formatting (goimports)"
+      - name: Run GPT PR Review
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: python .github/scripts/gpt_pr_review.py
+
+      - name: Comment on PR (Optional)
+        if: success()
+        uses: peter-evans/create-or-update-comment@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            🤖 **GPT Review Summary**
+
+            ${{ steps.gpt_review.outputs.review }}
