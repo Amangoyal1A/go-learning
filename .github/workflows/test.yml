@@ -27,7 +27,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install GPT Dependencies
-        run: pip install openai
+        run: pip install openai==0.28
 
       - name: Run GPT PR Review
         env:
