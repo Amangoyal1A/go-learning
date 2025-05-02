@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0           # Fetch full history for proper git diff
+          ref: ${{ github.head_ref }}
 
       - name: Set up Go
         uses: actions/setup-go@v4
@@ -29,10 +32,10 @@ jobs:
       - name: Run GPT PR Review
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python gpt_pr_review.py
+          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
+        run: python .github/scripts/gpt_pr_review.py
 
-      - name: Comment on PR (Optional)
-        if: success()
+      - name: Comment on PR
         uses: peter-evans/create-or-update-comment@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
