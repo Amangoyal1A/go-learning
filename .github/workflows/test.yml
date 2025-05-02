@@ -33,7 +33,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
-        run: python .github/scripts/gpt_pr_review.py
+        run: python  gpt_pr_review.py
 
       - name: Comment on PR
         uses: peter-evans/create-or-update-comment@v3
