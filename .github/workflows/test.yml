@@ -1,19 +1,27 @@
+# .github/workflows/chatgpt-pr-review.yml
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, edited, reopened]
 
 jobs:
-  code_review_job:
+  genai_review:
+    name: GenAI PR Review
     runs-on: ubuntu-latest
-    name: ChatGPT Code Review
+
     steps:
-      - name: GenAI Code Review
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Run GenAI Code Review
         uses: cirolini/genai-code-review@v2
         with:
           openai_api_key: ${{ secrets.OPENAI_API_KEY }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          github_pr_id: ${{ github.event.number }}
-          openai_model: "gpt-3.5-turbo"
+          github_token:   ${{ secrets.GITHUB_TOKEN }}
+          github_pr_id:   ${{ github.event.number }}
+          openai_model:       "gpt-3.5-turbo"   # or "gpt-4"
           openai_temperature: 0.2
-          openai_max_tokens: 2048
-          mode: patch
+          openai_max_tokens:  2048
+          mode:     patch    # review the diff, not files
+          language: go       # your repo’s programming language
