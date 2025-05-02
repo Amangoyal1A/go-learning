@@ -1,46 +1,21 @@
-name: PR AI Code Review
-
 on:
   pull_request:
-    types: [opened, synchronize, edited, reopened]
+    types: [opened, synchronize]
 
 jobs:
-  static-analysis:
-    name: Static Code Review
+  code_review_job:
     runs-on: ubuntu-latest
-
+    name: ChatGPT Code Review
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: GenAI Code Review
+        uses: cirolini/genai-code-review@v2
         with:
-          fetch-depth: 0           # Fetch full history for proper git diff
-          ref: ${{ github.head_ref }}
-
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.21'
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
-
-      - name: Install GPT Dependencies
-        run: pip install --upgrade openai
-
-      - name: Run GPT PR Review
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          BASE_BRANCH: ${{ github.event.pull_request.base.ref }}
-        run: python  gpt_pr_review.py
-
-      - name: Comment on PR
-        uses: peter-evans/create-or-update-comment@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            🤖 **GPT Review Summary**
-
-            ${{ steps.gpt_review.outputs.review }}
+          openai_api_key: ${{ secrets.openai_api_key }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_pr_id: ${{ github.event.number }}
+          openai_model: "gpt-3.5-turbo" # optional
+          openai_temperature: 0.5 # optional
+          openai_max_tokens: 2048 # optional
+          mode: files # files or patch
+          language: en # optional, default is 'en'
+          custom_prompt: "" # optional
