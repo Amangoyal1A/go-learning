@@ -1,14 +1,15 @@
 package main
 
-// import "fmt"
+import "fmt"
 
+func main() {
+	var val = []int{1, 2, 3, 4, 5}
 
+	// val = append(val, 3)
 
-func main(){
-// 	var val[5] int;
+	f := val
 
-// append(val,3);
-
-// 	fmt.Println(val);
+	f[2] = 100
+	fmt.Println(val)
 
 }
